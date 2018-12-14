@@ -338,7 +338,6 @@ def _putSegments(token,data,verbose=False):
     for _, segment in data.iterrows():
         count+=1
         sid = segment['sid']
-        print(sid)
         try:
             dict_data = {x : y for (x, y) in segment.iteritems() if y is not "" }
             del dict_data['sid']
@@ -354,7 +353,6 @@ def _putSegments(token,data,verbose=False):
                 token = __getToken(_clientID,_clientSecret,_username,_password)
                 header =  {'Authorization' : 'Bearer '+token,'accept': 'application/json',"Content-Type": "application/json"}
                 update_segments = _requests.put(endpoint_update,headers=header,data=_json.dumps(dict_data))
-            print(response_data.text)
             response_data.append([sid,update_segments.reason])
         except :
             response_data.append([sid,'issue reading your data'])
@@ -365,9 +363,10 @@ def _putSegments(token,data,verbose=False):
                 print(str(count)+' rows done')
     df = _pd.DataFrame(response_data)
     df.columns = ['sid','status']
+    return df
 
 def _postSegments(token,data,verbose=False):
-    "Function to update the traits. Arguments : token, data (dataframe with traits to be updated)"
+    "Function to create the segments. Arguments : token, data (dataframe with traits to be updated)"
     response_data = []
     data.fillna('',inplace=True)
     data['segmentRule'] = data['traitRule'].str.replace("'",'"')
